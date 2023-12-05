@@ -27,8 +27,30 @@ if (userInfoModel is not null)
         Console.WriteLine($"{col.Property} - {col.Column}");
     }
 }
+Console.WriteLine();
+
+var fullModel = ctx.Model.FindEntityType(typeof(Full));
+Console.WriteLine("Full mappings:");
+tableMapping = fullModel.GetTableMappings().Single();
+foreach (var col in tableMapping.ColumnMappings)
+{
+    Console.WriteLine($"{col.Property} - {col.Column}");
+}
+Console.WriteLine();
+
+var partModel = ctx.Model.FindEntityType(typeof(Part));
+Console.WriteLine("Part mappings:");
+tableMapping = partModel.GetTableMappings().Single();
+foreach (var col in tableMapping.ColumnMappings)
+{
+    Console.WriteLine($"{col.Property} - {col.Column}");
+}
+Console.WriteLine();
 
 public sealed record UserInfo(string Id, [property: StringLength(256)]string? UserName);
+
+public sealed record Full(int Id, string Prop1, string Prop2);
+public sealed record Part(int Id, string Prop1);
 
 sealed class AppDbContext : IdentityDbContext
 {
@@ -57,6 +79,18 @@ sealed class AppDbContext : IdentityDbContext
 
             var columnName = userNameProperty.GetColumnName();
             b.Property(_ => _.UserName).HasColumnName(columnName);
+        });
+
+        builder.Entity<Full>();
+
+        builder.Entity<Part>(b =>
+        {
+            var metadata = builder.Entity<Full>().Metadata;
+            var table = metadata.GetTableName();
+
+            b.ToTable(table);
+
+            b.HasOne<Full>().WithOne().HasForeignKey<Part>(_ => _.Id);
         });
     }
 }
