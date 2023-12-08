@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 var ctx = new AppDbContext();
 
-
 var identityUserModel = ctx.Model.FindEntityType(typeof(IdentityUser));
 var tableMapping = identityUserModel.GetTableMappings().Single();
 Console.WriteLine("IdnetityUser mappings:");
@@ -21,7 +20,7 @@ var userInfoModel = ctx.Model.FindEntityType(typeof(UserInfo));
 if (userInfoModel is not null)
 {
     Console.WriteLine("UserInfo mappings:");
-    tableMapping = identityUserModel.GetTableMappings().Single();
+    tableMapping = userInfoModel.GetTableMappings().Single();
     foreach (var col in tableMapping.ColumnMappings)
     {
         Console.WriteLine($"{col.Property} - {col.Column}");
@@ -47,7 +46,7 @@ foreach (var col in tableMapping.ColumnMappings)
 }
 Console.WriteLine();
 
-public sealed record UserInfo(string Id, [property: StringLength(256)]string? UserName);
+public sealed record UserInfo(string Id, [property: StringLength(256)] string? UserName);
 
 public sealed record Full(int Id, string Prop1, string Prop2);
 public sealed record Part(int Id, string Prop1);
